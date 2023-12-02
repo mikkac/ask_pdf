@@ -1,8 +1,8 @@
 ## Ask the PDF 📖❓
 
-<p align="center">
+<!-- <p align="center">
   <img src="https://github.com/mikkac/flashcards_generator/blob/main/resources/demo.gif?raw=true" alt="animated" />
-</p>
+</p> -->
 
 ## Prerequisites
 
