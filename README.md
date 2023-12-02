@@ -14,20 +14,20 @@
 1. Clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/mikkac/flashcards_generator
-   cd flashcards_generator
+   git clone https://github.com/mikkac/ask_pdf
+   cd ask_pdf
    ```
 
 2. Create a Conda environment for the project:
 
    ```bash
-   conda create -n flashcards_env python=3.11
+   conda create -n ask_pdf_env python=3.11
    ```
 
 3. Activate the Conda environment:
 
    ```bash
-   conda activate flashcards_env
+   conda activate ask_pdf_env
    ```
 
 4. Install Poetry within the Conda environment:
@@ -49,7 +49,7 @@
 7. Run your project:
 
    ```bash
-   poetry run streamlit flashcards_generator/run app.py
+   poetry run streamlit ask_pdf/run app.py
    ```
 
 ## License
