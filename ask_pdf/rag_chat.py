@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv, find_dotenv
 import openai
 from llama_index import (
     SimpleDirectoryReader,
