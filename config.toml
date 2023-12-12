@@ -1,0 +1,3 @@
+[server]
+ip = "127.0.0.1"  # Server IP address
+port = 8000       # Server port
