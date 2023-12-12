@@ -4,15 +4,18 @@ from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 import toml
 from ask_pdf.rag_chat import RAGChat
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())  # read local .env file
 
 # Load configurations
-config = toml.load("config.toml")
+config = toml.load("../config.toml")
 server_config = config.get("server", {})
 ip = server_config.get("ip", "127.0.0.1")
 port = server_config.get("port", 8000)
 
 app = FastAPI()
-handler = RAGChat(max_tokens=500)  # Set max_tokens as per your requirement
+handler = RAGChat(openai_api_key=os.environ["OPENAI_API_KEY"])  # Set max_tokens as per your requirement
 
 
 class MessageRequest(BaseModel):
