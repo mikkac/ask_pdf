@@ -9,13 +9,13 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())  # read local .env file
 
 # Load configurations
-config = toml.load("../config.toml")
+config = toml.load("config.toml")
 server_config = config.get("server", {})
 ip = server_config.get("ip", "127.0.0.1")
 port = server_config.get("port", 8000)
 
 app = FastAPI()
-handler = RAGChat(openai_api_key=os.environ["OPENAI_API_KEY"])  # Set max_tokens as per your requirement
+handler = RAGChat(openai_api_key=os.environ["OPENAI_API_KEY"])
 
 
 class MessageRequest(BaseModel):
@@ -26,7 +26,6 @@ class MessageRequest(BaseModel):
 async def create_embeddings(file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Only PDF files are accepted")
-
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
             contents = await file.read()
