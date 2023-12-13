@@ -26,7 +26,7 @@ class RAGChat:
         send_message(user_msg): Sends a message to the RAG model and returns the response.
     """
 
-    def __init__(self, max_history_tokens, openai_api_key):
+    def __init__(self, openai_api_key):
         """
         Initializes the RAGChat with a specified token limit for conversation history and OpenAI API key.
 
