@@ -1,6 +1,7 @@
 import os
 import openai
 from llama_index import (
+    Document,
     SimpleDirectoryReader,
     load_index_from_storage,
     StorageContext,
@@ -35,6 +36,7 @@ class RAGChat:
         """
         openai.api_key = openai_api_key
         self.llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
+        # TODO: Make sure that all models are downloaded before first file upload
 
     def create_embeddings(self, file):
         """
