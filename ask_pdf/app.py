@@ -28,19 +28,24 @@ st.title("Ask the PDF")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "file_ready" not in st.session_state:
+    st.session_state.file_ready = False
+
 # Upload PDF file
 pdf_file = st.file_uploader("Upload a PDF file", type="pdf")
 if not pdf_file:
     st.warning("Please upload a PDF file.")
     st.stop()
 
-if pdf_file:
+if pdf_file and not st.session_state.file_ready:
     with st.spinner("Uploading PDF file and creating embeddings..."):
         create_embeddings = requests.post(
             f"{server_url}/create_embeddings",
             files={"file": ("filename.pdf", pdf_file.getvalue(), "application/pdf")},
         )
         logging.info(f"Upload Response: {create_embeddings.json()}")
+        st.session_state.file_ready = True
+
 st.success("Done! You can ask your questions now.")
 
 # Display chat messages from history on app rerun
@@ -48,16 +53,27 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
+def send_message(message):
+    response = requests.post(f"{server_url}/send_message", json={"user_msg": message})
+    logging.info(f"Response to '{message}': {response.json()}")
+    return response
+
+
 # React to user input
 if prompt := st.chat_input("Ask a question"):
     # Display user message in chat message container
     st.chat_message("user").markdown(prompt)
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
-
-    response = f"Echo: {prompt}"
-    # Display assistant response in chat message container
-    with st.chat_message("assistant"):
-        st.markdown(response)
-    # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
+    response = send_message(prompt)
+    print(response.json())
+    if response.status_code == 200:
+        response = response.json()["response"]
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        # Add assistant response to chat history
+        st.session_state.messages.append({"role": "assistant", "content": response})
+    else:
+        logging.error(f"Error in the response! {response}")
