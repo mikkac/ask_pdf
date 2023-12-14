@@ -18,9 +18,8 @@ import logging
 # Load configurations
 config = toml.load("config.toml")
 server_config = config.get("server", {})
-ip = server_config.get("ip", "127.0.0.1")
 port = server_config.get("port", 8000)
-server_url = f"http://{ip}:{port}"
+server_url = f"http://server:{port}"
 
 st.title("Ask the PDF")
 
