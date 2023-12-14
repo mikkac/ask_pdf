@@ -3,7 +3,7 @@ import tempfile
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from pydantic import BaseModel
 import toml
-from ask_pdf.rag_chat import RAGChat
+from rag_chat import RAGChat
 from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())  # read local .env file
