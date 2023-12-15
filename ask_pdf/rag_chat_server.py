@@ -11,8 +11,13 @@ load_dotenv(find_dotenv())  # read local .env file
 # Load configurations
 config = toml.load("config.toml")
 server_config = config.get("server", {})
-ip = server_config.get("ip", "127.0.0.1")
-port = server_config.get("port", 8000)
+server_host = server_config.get("host", "127.0.0.1")
+server_port = server_config.get("port", 8000)
+
+
+qdrant_config = config.get("qdrant", {})
+host = qdrant_config.get("host", "qdrant")
+port = qdrant_config.get("port", 6333)
 
 app = FastAPI()
 handler = RAGChat(openai_api_key=os.environ["OPENAI_API_KEY"])
@@ -57,4 +62,4 @@ def send_message(request: MessageRequest):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host=ip, port=port)
+    uvicorn.run(app, host=server_host, port=server_port)

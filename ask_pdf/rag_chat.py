@@ -12,6 +12,9 @@ from llama_index.retrievers import AutoMergingRetriever
 from llama_index.indices.postprocessor import SentenceTransformerRerank
 from llama_index.query_engine import RetrieverQueryEngine
 from llama_index.llms import OpenAI
+from llama_index.vector_stores import QdrantVectorStore
+
+from qdrant_client import QdrantClient
 
 
 class RAGChat:
@@ -26,7 +29,7 @@ class RAGChat:
         send_message(user_msg): Sends a message to the RAG model and returns the response.
     """
 
-    def __init__(self, openai_api_key):
+    def __init__(self, openai_api_key, qdrant_url):
         """
         Initializes the RAGChat with a specified token limit for conversation history and OpenAI API key.
 
@@ -35,6 +38,7 @@ class RAGChat:
         """
         openai.api_key = openai_api_key
         self.llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
+        self.qdrant_url = qdrant_url
         # TODO: Make sure that all models are downloaded before first file upload
 
     def create_embeddings(self, file):
@@ -91,7 +95,10 @@ class RAGChat:
             llm=llm,
             embed_model=embed_model,
         )
-        storage_context = StorageContext.from_defaults()
+
+        qdrant_client = QdrantClient(url=self.qdrant_url)
+        vector_db = QdrantVectorStore(client=qdrant_client, collection_name="documents")
+        storage_context = StorageContext.from_defaults(vector_store=vector_db)
         storage_context.docstore.add_documents(nodes)
 
         if not os.path.exists(save_dir):
