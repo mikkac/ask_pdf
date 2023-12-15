@@ -1,2 +1,7 @@
 [server]
+ip = "127.0.0.1"
 port = 8000
+
+[qdrant]
+ip = "qdrant"
+port = 6333
