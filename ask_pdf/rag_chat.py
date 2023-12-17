@@ -101,19 +101,19 @@ class RAGChat:
         storage_context = StorageContext.from_defaults(vector_store=vector_db)
         storage_context.docstore.add_documents(nodes)
 
-        if not os.path.exists(save_dir):
-            automerging_index = VectorStoreIndex(
+        # if not os.path.exists(save_dir):
+        return VectorStoreIndex(
                 leaf_nodes,
                 storage_context=storage_context,
                 service_context=merging_context,
             )
-            automerging_index.storage_context.persist(persist_dir=save_dir)
-        else:
-            automerging_index = load_index_from_storage(
-                StorageContext.from_defaults(persist_dir=save_dir),
-                service_context=merging_context,
-            )
-        return automerging_index
+            # automerging_index.storage_context.persist(persist_dir=save_dir)
+        # else:
+            # automerging_index = load_index_from_storage(
+                # StorageContext.from_defaults(persist_dir=save_dir),
+                # service_context=merging_context,
+            # )
+        # return automerging_index
 
     def _get_automerging_query_engine(
         self, automerging_index, similarity_top_k=12, rerank_top_n=2
