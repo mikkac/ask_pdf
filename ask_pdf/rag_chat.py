@@ -1,8 +1,6 @@
-import os
 import openai
 from llama_index import (
     SimpleDirectoryReader,
-    load_index_from_storage,
     StorageContext,
     ServiceContext,
     VectorStoreIndex,
@@ -73,7 +71,6 @@ class RAGChat:
         documents,
         llm,
         embed_model="local:BAAI/bge-small-en-v1.5",
-        save_dir="merging_index",
     ):
         """
         Builds an automerging index from the given documents using the specified language model and embedding model.
@@ -101,19 +98,11 @@ class RAGChat:
         storage_context = StorageContext.from_defaults(vector_store=vector_db)
         storage_context.docstore.add_documents(nodes)
 
-        # if not os.path.exists(save_dir):
         return VectorStoreIndex(
-                leaf_nodes,
-                storage_context=storage_context,
-                service_context=merging_context,
-            )
-            # automerging_index.storage_context.persist(persist_dir=save_dir)
-        # else:
-            # automerging_index = load_index_from_storage(
-                # StorageContext.from_defaults(persist_dir=save_dir),
-                # service_context=merging_context,
-            # )
-        # return automerging_index
+            leaf_nodes,
+            storage_context=storage_context,
+            service_context=merging_context,
+        )
 
     def _get_automerging_query_engine(
         self, automerging_index, similarity_top_k=12, rerank_top_n=2

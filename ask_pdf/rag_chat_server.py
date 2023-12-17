@@ -20,7 +20,10 @@ qdrant_host = qdrant_config.get("host", "qdrant")
 qdrant_port = qdrant_config.get("port", 6333)
 
 app = FastAPI()
-handler = RAGChat(openai_api_key=os.environ["OPENAI_API_KEY"], qdrant_url=f"http://{qdrant_host}:{qdrant_port}")
+handler = RAGChat(
+    openai_api_key=os.environ["OPENAI_API_KEY"],
+    qdrant_url=f"http://{qdrant_host}:{qdrant_port}",
+)
 
 
 class MessageRequest(BaseModel):
