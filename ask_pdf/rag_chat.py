@@ -1,17 +1,14 @@
-import openai
-from llama_index import (
-    SimpleDirectoryReader,
-    StorageContext,
-    ServiceContext,
-    VectorStoreIndex,
-)
-from llama_index.node_parser import HierarchicalNodeParser, get_leaf_nodes
-from llama_index.retrievers import AutoMergingRetriever
-from llama_index.indices.postprocessor import SentenceTransformerRerank
-from llama_index.query_engine import RetrieverQueryEngine
-from llama_index.llms import OpenAI
-from llama_index.vector_stores import QdrantVectorStore
+""" Converstaion handler for Retriever-Augmented Generation (RAG) model. """
 
+import openai
+from llama_index import (ServiceContext, SimpleDirectoryReader, StorageContext,
+                         VectorStoreIndex)
+from llama_index.indices.postprocessor import SentenceTransformerRerank
+from llama_index.llms import OpenAI
+from llama_index.node_parser import HierarchicalNodeParser, get_leaf_nodes
+from llama_index.query_engine import RetrieverQueryEngine
+from llama_index.retrievers import AutoMergingRetriever
+from llama_index.vector_stores import QdrantVectorStore
 from qdrant_client import QdrantClient
 
 
@@ -29,7 +26,8 @@ class RAGChat:
 
     def __init__(self, openai_api_key, qdrant_url):
         """
-        Initializes the RAGChat with a specified token limit for conversation history and OpenAI API key.
+        Initializes the RAGChat with a specified token limit for
+        conversation history and OpenAI API key.
 
         Args:
             openai_api_key (str): OpenAI API key for accessing GPT-3 services.
@@ -37,6 +35,8 @@ class RAGChat:
         openai.api_key = openai_api_key
         self.llm = OpenAI(model="gpt-3.5-turbo", temperature=0.1)
         self.qdrant_url = qdrant_url
+        self.automerging_index = None
+        self.automerging_query_engine = None
         # TODO: Make sure that all models are downloaded before first file upload
 
     def create_embeddings(self, file):
@@ -56,7 +56,8 @@ class RAGChat:
         """
         Sends a user message to the RAG model and returns the model's response.
 
-        The method formats the input to include both the conversation history and the new user message.
+        The method formats the input to include both the conversation history
+        and the new user message.
 
         Args:
             user_msg (str): The user's message to send to the model.
@@ -73,13 +74,16 @@ class RAGChat:
         embed_model="local:BAAI/bge-small-en-v1.5",
     ):
         """
-        Builds an automerging index from the given documents using the specified language model and embedding model.
+        Builds an automerging index from the given documents using the specified
+        language model and embedding model.
 
         Args:
             documents (list): A list of documents to be indexed.
             llm: The language model to be used for indexing.
-            embed_model (str, optional): The embedding model to be used. Defaults to "local:BAAI/bge-small-en-v1.5".
-            save_dir (str, optional): The directory where the index is to be saved. Defaults to "merging_index".
+            embed_model (str, optional): The embedding model to be used.
+                                         Defaults to "local:BAAI/bge-small-en-v1.5".
+            save_dir (str, optional): The directory where the index is to be saved.
+                                      Defaults to "merging_index".
 
         Returns:
             An automerging index created from the provided documents and models.
@@ -112,7 +116,8 @@ class RAGChat:
 
         Args:
             automerging_index: The automerging index to be used for creating the query engine.
-            similarity_top_k (int, optional): The number of top similar items to retrieve. Defaults to 12.
+            similarity_top_k (int, optional): The number of top similar items to retrieve.
+                                              Defaults to 12.
             rerank_top_n (int, optional): The number of top items to rerank. Defaults to 2.
 
         Returns:

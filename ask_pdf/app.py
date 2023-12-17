@@ -1,7 +1,10 @@
+""" Streamlit app for Ask the PDF """
+
+import logging
+
 import requests
 import streamlit as st
 import toml
-import logging
 
 # with open(pdf_file_path, 'rb') as file:
 #     response = requests.post(
@@ -41,8 +44,9 @@ if pdf_file and not st.session_state.file_ready:
         create_embeddings = requests.post(
             f"{server_url}/create_embeddings",
             files={"file": ("filename.pdf", pdf_file.getvalue(), "application/pdf")},
+            timeout=600,
         )
-        logging.info(f"Upload Response: {create_embeddings.json()}")
+        logging.info("Upload Response: %s", create_embeddings.json())
         st.session_state.file_ready = True
 
 st.success("Done! You can ask your questions now.")
@@ -53,10 +57,13 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 
-def send_message(message):
-    response = requests.post(f"{server_url}/send_message", json={"user_msg": message})
-    logging.info(f"Response to '{message}': {response.json()}")
-    return response
+def send_message(msg):
+    """Sends a message to the RAG model and returns the response."""
+    resp = requests.post(
+        f"{server_url}/send_message", json={"user_msg": msg}, timeout=600
+    )
+    logging.info("Response to '%s': %s", msg, resp.json())
+    return resp
 
 
 # React to user input
@@ -75,4 +82,4 @@ if prompt := st.chat_input("Ask a question"):
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
     else:
-        logging.error(f"Error in the response! {response}")
+        logging.error("Error in the response! %s", response)

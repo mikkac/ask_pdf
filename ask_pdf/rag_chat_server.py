@@ -1,10 +1,13 @@
+""" This is the server that will be used to interact with the RAGChat class. """
+
 import os
 import tempfile
-from fastapi import FastAPI, HTTPException, UploadFile, File
-from pydantic import BaseModel
+
 import toml
+from dotenv import find_dotenv, load_dotenv
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from pydantic import BaseModel
 from rag_chat import RAGChat
-from dotenv import load_dotenv, find_dotenv
 
 load_dotenv(find_dotenv())  # read local .env file
 
@@ -27,11 +30,14 @@ handler = RAGChat(
 
 
 class MessageRequest(BaseModel):
+    """Message request body."""
+
     user_msg: str
 
 
 @app.post("/create_embeddings")
 async def create_embeddings(file: UploadFile = File(...)):
+    """Creates embeddings from the given PDF file."""
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Only PDF files are accepted")
     try:
@@ -50,16 +56,17 @@ async def create_embeddings(file: UploadFile = File(...)):
     except HTTPException as e:
         raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @app.post("/send_message")
 def send_message(request: MessageRequest):
+    """Sends a message to the RAG model and returns the response."""
     try:
         response = handler.send_message(request.user_msg)
         return {"response": response}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 if __name__ == "__main__":
