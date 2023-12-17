@@ -6,7 +6,7 @@ authors = ["Mikolaj Kaczmarek <m.kaczmarek9@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "~3.11"
 fastapi = "0.104.1"
 jupyter = "1.0.0"
 llama-index = "0.9.13"
