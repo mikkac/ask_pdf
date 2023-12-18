@@ -72,14 +72,19 @@ if prompt := st.chat_input("Ask a question"):
     st.chat_message("user").markdown(prompt)
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": prompt})
-    response = send_message(prompt)
-    print(response.json())
-    if response.status_code == 200:
-        response = response.json()["response"]
+
+    with st.spinner("Thinking..."):
+        response = send_message(prompt)
+        if response.status_code == 200:
+            response = response.json()["response"]
+        else:
+            response = None
+            logging.error("Error in the response! %s", response)
         # Display assistant response in chat message container
         with st.chat_message("assistant"):
-            st.markdown(response)
+            if response:
+                st.markdown(response)
+            else:
+                st.error("Error in the response! Please try again.")
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
-    else:
-        logging.error("Error in the response! %s", response)
