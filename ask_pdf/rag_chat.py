@@ -1,8 +1,12 @@
 """ Converstaion handler for Retriever-Augmented Generation (RAG) model. """
 
 import openai
-from llama_index import (ServiceContext, SimpleDirectoryReader, StorageContext,
-                         VectorStoreIndex)
+from llama_index import (
+    ServiceContext,
+    SimpleDirectoryReader,
+    StorageContext,
+    VectorStoreIndex,
+)
 from llama_index.indices.postprocessor import SentenceTransformerRerank
 from llama_index.llms import OpenAI
 from llama_index.node_parser import HierarchicalNodeParser, get_leaf_nodes
