@@ -1,15 +1,10 @@
 """ Converstaion handler for Retriever-Augmented Generation (RAG) model. """
 
 import openai
-from llama_index import (
-    ServiceContext,
-    SimpleDirectoryReader,
-    StorageContext,
-    VectorStoreIndex,
-)
+from llama_index import (ServiceContext, SimpleDirectoryReader, StorageContext,
+                         VectorStoreIndex)
 from llama_index.indices.postprocessor import SentenceTransformerRerank
 from llama_index.llms import OpenAI
-from llama_index.node_parser import HierarchicalNodeParser, get_leaf_nodes
 from llama_index.query_engine import RetrieverQueryEngine
 from llama_index.retrievers import AutoMergingRetriever
 from llama_index.vector_stores import QdrantVectorStore
@@ -92,24 +87,15 @@ class RAGChat:
         Returns:
             An automerging index created from the provided documents and models.
         """
-        chunk_sizes = [2048, 512, 128]
-        node_parser = HierarchicalNodeParser.from_defaults(chunk_sizes=chunk_sizes)
-        nodes = node_parser.get_nodes_from_documents(documents)
-        leaf_nodes = get_leaf_nodes(nodes)
-        merging_context = ServiceContext.from_defaults(
+        qdrant_client = QdrantClient(url=self.qdrant_url)
+        service_context = ServiceContext.from_defaults(
             llm=llm,
             embed_model=embed_model,
         )
-
-        qdrant_client = QdrantClient(url=self.qdrant_url)
-        vector_db = QdrantVectorStore(client=qdrant_client, collection_name="documents")
-        storage_context = StorageContext.from_defaults(vector_store=vector_db)
-        storage_context.docstore.add_documents(nodes)
-
-        return VectorStoreIndex(
-            leaf_nodes,
-            storage_context=storage_context,
-            service_context=merging_context,
+        vector_store = QdrantVectorStore(client=qdrant_client, collection_name="docs")
+        storage_context = StorageContext.from_defaults(vector_store=vector_store)
+        return VectorStoreIndex.from_documents(
+            documents, storage_context=storage_context, service_context=service_context
         )
 
     def _get_automerging_query_engine(
