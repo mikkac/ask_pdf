@@ -1,5 +1,6 @@
 """ This is the server that will be used to interact with the RAGChat class. """
 
+import logging
 import os
 import tempfile
 
@@ -54,8 +55,10 @@ async def create_embeddings(file: UploadFile = File(...)):
 
         return {"message": "Embeddings created successfully"}
     except HTTPException as e:
+        logging.error("HTTPException: %s", e)
         raise e
     except Exception as e:
+        logging.error("Exception: %s", e)
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
@@ -63,9 +66,11 @@ async def create_embeddings(file: UploadFile = File(...)):
 def send_message(request: MessageRequest):
     """Sends a message to the RAG model and returns the response."""
     try:
+        logging.info("Querying message: %s", request.user_msg)
         response = handler.send_message(request.user_msg)
         return {"response": response}
     except Exception as e:
+        logging.error("Exception: %s", e)
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
