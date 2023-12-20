@@ -6,18 +6,6 @@ import requests
 import streamlit as st
 import toml
 
-# with open(pdf_file_path, 'rb') as file:
-#     response = requests.post(
-#         f"{server_url}/create_embeddings",
-#         files={"file": ("filename.pdf", file, "application/pdf")}
-#     )
-#     print("Upload Response:", response.json())
-
-# def send_message_and_print_response(message):
-#     response = requests.post(f"{server_url}/send_message", json={"user_msg": message})
-#     print(f"Response to '{message}':", response.json())
-
-
 # Load configurations
 config = toml.load("config.toml")
 server_config = config.get("server", {})
