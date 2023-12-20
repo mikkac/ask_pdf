@@ -2,7 +2,7 @@
 
 import logging
 
-import requests
+import httpx
 import streamlit as st
 import toml
 
@@ -29,7 +29,7 @@ if not pdf_file:
 
 if pdf_file and not st.session_state.file_ready:
     with st.spinner("Uploading PDF file and creating embeddings..."):
-        create_embeddings = requests.post(
+        create_embeddings = httpx.post(
             f"{server_url}/create_embeddings",
             files={"file": ("filename.pdf", pdf_file.getvalue(), "application/pdf")},
             timeout=600,
@@ -47,9 +47,7 @@ for message in st.session_state.messages:
 
 def send_message(msg):
     """Sends a message to the RAG model and returns the response."""
-    resp = requests.post(
-        f"{server_url}/send_message", json={"user_msg": msg}, timeout=600
-    )
+    resp = httpx.post(f"{server_url}/send_message", json={"user_msg": msg}, timeout=600)
     logging.info("Response to '%s': %s", msg, resp.json())
     return resp
 
